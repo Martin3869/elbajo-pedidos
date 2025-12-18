@@ -118,8 +118,31 @@ let estado = {
 // ==================== DETECCION DE DISPOSITIVO ====================
 function detectarDispositivo() {
     const ancho = window.innerWidth;
-    const esMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    estado.esComputadora = (ancho > 1024) && !esMovil;
+    const alto = window.innerHeight;
+    
+    // Detectar si es dispositivo movil por user agent
+    const esMovilUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(navigator.userAgent);
+    
+    // Detectar si es pantalla tactil
+    const esTactil = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    
+    // Detectar por tamaño de pantalla (menos de 1024px de ancho O menos de 768px de alto)
+    const esPantallaChica = (ancho < 1024) || (alto < 768);
+    
+    // Es COMPUTADORA solo si: pantalla grande Y no es movil por UA Y no es principalmente tactil
+    // Es CELULAR si: cualquiera de las condiciones de movil se cumple
+    estado.esComputadora = !esMovilUA && !esPantallaChica && !esTactil;
+    
+    // Debug - mostrar en consola que dispositivo detecto
+    console.log('Deteccion de dispositivo:', {
+        ancho: ancho,
+        alto: alto,
+        esMovilUA: esMovilUA,
+        esTactil: esTactil,
+        esPantallaChica: esPantallaChica,
+        resultado: estado.esComputadora ? 'COMPUTADORA' : 'CELULAR'
+    });
+    
     return estado.esComputadora;
 }
 
@@ -1619,15 +1642,21 @@ function agregarEventos() {
 // ==================== INICIALIZACION ====================
 document.addEventListener('DOMContentLoaded', function() {
     try {
+        // Detectar dispositivo
         detectarDispositivo();
+        
+        // Cargar datos guardados
         cargarDatos();
         
+        // Si no esta configurado, mostrar pantalla de configuracion
         if (!estado.config.configurado) {
             mostrarConfiguracionInicial();
             return;
         }
         
+        // COMPUTADORA: Entrar directo como admin
         if (estado.esComputadora) {
+            console.log('Modo COMPUTADORA - Entrando como ADMIN');
             estado.usuarioActual = {
                 telefono: estado.config.telefonoSuperusuario,
                 nombre: 'Administrador',
@@ -1638,13 +1667,29 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        if (cargarSesion()) {
-            iniciarApp();
-        } else {
-            mostrarLogin();
-        }
+        // CELULAR: Siempre pedir login (incluso si hay sesion guardada, verificar)
+        console.log('Modo CELULAR - Mostrando login');
+        
+        // Limpiar sesion anterior para forzar login fresco en celular
+        localStorage.removeItem('app_sesion');
+        estado.usuarioActual = null;
+        
+        mostrarLogin();
+        
     } catch(e) {
         console.error('Error iniciando app:', e);
         alert('Error iniciando la aplicacion. Intenta recargar la pagina.');
+    }
+});
+
+// Detectar cambios de tamaño de pantalla (por si rotan el celular o cambian ventana)
+window.addEventListener('resize', function() {
+    const eraComputadora = estado.esComputadora;
+    detectarDispositivo();
+    
+    // Si cambio de tipo de dispositivo, recargar
+    if (eraComputadora !== estado.esComputadora) {
+        console.log('Cambio de tipo de dispositivo detectado, recargando...');
+        location.reload();
     }
 });
