@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1e3a5f">
+    <title>Sistema de Pedidos</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- PANTALLA DE LOGIN -->
+    <div id="pantallaLogin">
+        <!-- Se genera dinamicamente desde JavaScript -->
+    </div>
+
+    <!-- APP PRINCIPAL (oculta hasta login) -->
+    <div id="appPrincipal" class="app-oculta">
+        <!-- Header -->
+        <header class="header">
+            <img id="logoImg" class="logo" src="img/logo.png" alt="Logo" onerror="this.style.display='none'">
+            <div class="header-info">
+                <h1>Sistema de Pedidos</h1>
+            </div>
+            <div class="header-usuario">
+                <span id="nombreUsuario">Usuario</span>
+                <span id="rolUsuario" class="rol-badge">Vendedor</span>
+            </div>
+            <button id="btnCerrarSesion" class="btn-cerrar-sesion">Salir</button>
+        </header>
+
+        <!-- Contenedor de pantallas -->
+        <main id="pantallas">
+            <!-- Se genera dinamicamente desde JavaScript -->
+        </main>
+
+        <!-- Navegacion inferior -->
+        <nav class="nav-bar">
+            <button class="nav-btn activo" data-pantalla="inicio">
+                <span class="icono">🏠</span>
+                <span>Inicio</span>
+            </button>
+            <button class="nav-btn" data-pantalla="nuevoPedido">
+                <span class="icono">🛒</span>
+                <span>Pedido</span>
+                <span id="badgeCarrito" class="badge oculto">0</span>
+            </button>
+            <button class="nav-btn" data-pantalla="clientes">
+                <span class="icono">👥</span>
+                <span>Clientes</span>
+            </button>
+            <button class="nav-btn" data-pantalla="productos">
+                <span class="icono">📦</span>
+                <span>Productos</span>
+            </button>
+            <button class="nav-btn" data-pantalla="historial">
+                <span class="icono">📋</span>
+                <span>Historial</span>
+            </button>
+            <button class="nav-btn nav-admin oculto" data-pantalla="admin">
+                <span class="icono">⚙️</span>
+                <span>Admin</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
